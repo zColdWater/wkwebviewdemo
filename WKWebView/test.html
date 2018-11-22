@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head lang="zh-cmn-Hans">
+        <meta charset="UTF-8">
+            <title>Test</title>
+            <meta name="renderer" content="webkit">
+                <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+                    <meta name="viewport" content="width=device-width,initial-scale=0.5,user-scalable=no"/>
+    </head>
+    <style>
+        .btn {
+            text-align: center;
+            background: #eee;
+            color: #000;
+            padding: 20px;
+            margin: 30px;
+            font-size: 24px;
+            border-radius: 4px;
+            box-shadow: 4px 2px 10px #999;
+        }
+    
+    .btn:active {
+        opacity: .7;
+        box-shadow: 4px 2px 10px #555;
+    }
+    
+        </style>
+    <body>
+        
+        <div class="btn" onclick="jsInvokeNative()"> jsInvokeNative </div>
+        <div class="btn" onclick="nativeInvokeJs()"> nativeInvokeJs </div>
+        <div class="btn" onclick="dismissPages()"> dismissPage </div>
+
+        <script>
+            
+            // JS Invoke Native
+            function jsInvokeNative() {
+                window.webkit.messageHandlers.jsInvokeNative.postMessage("jsInvokeNative params");
+            }
+        
+            // Native Invoke JS
+            function nativeInvokeJs() {
+                window.webkit.messageHandlers.nativeInvokeJs.postMessage("nativeInvokeJs params");
+            }
+        
+            // Regist this function waiting native invoke
+            function nativeMessageHandler(action, params) {
+                window.webkit.messageHandlers.scriptMessageHandler.postMessage(action + params);
+            }
+        
+            // Dismis current pages
+            function dismissPages() {
+                // postMessage function must be take params. example empty string.
+                window.webkit.messageHandlers.dismissPage.postMessage("");
+            }
+                                                                                                              
+        </script>
+    </body>
+</html>
