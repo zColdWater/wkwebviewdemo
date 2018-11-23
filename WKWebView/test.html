@@ -29,9 +29,20 @@
         
         <div class="btn" onclick="jsInvokeNative()"> jsInvokeNative </div>
         <div class="btn" onclick="nativeInvokeJs()"> nativeInvokeJs </div>
+        <div class="btn" onclick="alertMessage()"> alertMessage </div>
         <div class="btn" onclick="dismissPages()"> dismissPage </div>
+        <div class="btn" onclick="gotoOtherPage()"> gotoOtherPage </div>
 
         <script>
+            
+            // 去其他页面
+            function gotoOtherPage() {
+                window.location.href = 'https://zcoldwater.github.io/blog/article/ios/wkwebview/';
+            }
+            
+            function alertMessage() {
+                alert("Hello I will alert some message!");
+            }
             
             // JS Invoke Native
             function jsInvokeNative() {
