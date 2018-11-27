@@ -26,24 +26,66 @@
     
         </style>
     <body>
-        
+
+        <div class="btn" onclick="sync()"> syncInvoke </div>
+        <div class="btn" onclick="async()"> asyncInvoke </div>
         <div class="btn" onclick="jsInvokeNative()"> jsInvokeNative </div>
         <div class="btn" onclick="nativeInvokeJs()"> nativeInvokeJs </div>
         <div class="btn" onclick="alertMessage()"> alertMessage </div>
+        <div class="btn" onclick="promptMessage()"> promptMessage </div>
+        <div class="btn" onclick="confirmMessage()"> confirmMessage </div>
         <div class="btn" onclick="dismissPages()"> dismissPage </div>
         <div class="btn" onclick="gotoOtherPage()"> gotoOtherPage </div>
 
         <script>
             
+            function sync() {
+                let result = syncInvoke("我是同步调用!")
+                alert('同步返回值:'+result)
+            }
+
+            function async() {
+                asyncInvoke("我是异步调用!",function(result) {
+                    alert('得到返回值:'+result);
+                })
+            }
+
+            // 同步调用
+            function syncInvoke(name) {
+                return prompt(name,"sync");
+            }
+
+            // 异步调用
+            function asyncInvoke(name,block) {
+                let key = 'global_block'
+                // 挂载在JS全局
+                window[key] = block
+                let params = {"data": name,
+                              "callbackName": key}
+                let jsonStr = JSON.stringify(params);
+                return prompt(jsonStr,"async");
+            }
+
             // 去其他页面
             function gotoOtherPage() {
                 window.location.href = 'https://zcoldwater.github.io/blog/article/ios/wkwebview/';
             }
-            
+        
+            // Confirm 信息
+            function confirmMessage() {
+                confirm("First Args");
+            }
+        
+            // Prompt 信息
+            function promptMessage() {
+                prompt("First Args","Second Args");
+            }
+        
+            // Alert 信息
             function alertMessage() {
                 alert("Hello I will alert some message!");
             }
-            
+        
             // JS Invoke Native
             function jsInvokeNative() {
                 window.webkit.messageHandlers.jsInvokeNative.postMessage("jsInvokeNative params");

@@ -178,7 +178,6 @@ class WKWebViewController: UIViewController, WKScriptMessageHandler, WKUIDelegat
     
     
     // MARK: - WKUIDelegate
-    
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         return nil
     }
@@ -187,22 +186,79 @@ class WKWebViewController: UIViewController, WKScriptMessageHandler, WKUIDelegat
         print("webViewDidClose:\(webView)")
     }
     
+    // JS 代码调用 alert("参数A")
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
         print("runJavaScriptAlertPanelWithMessage")
         print("alert message:\(message)")
+        
+        let alert = UIAlertController(title: "Alert", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+            switch action.style{
+            case .default:
+                print("default")
+                
+            case .cancel:
+                print("cancel")
+                
+            case .destructive:
+                print("destructive")
+            }}))
+        self.present(alert, animated: true, completion: nil)
+        
         completionHandler()
     }
     
-    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
-        print("runJavaScriptTextInputPanelWithPrompt")
-        print("prompt:\(prompt)")
-        print("defaultText:\(defaultText)")
-        completionHandler(nil)
-    }
-    
+    // JS 代码调用 confirm("参数A")
     func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
         print("runJavaScriptConfirmPanelWithMessage")
+        print("message:\(message)")
         completionHandler(true)
+    }
+    
+    // JS 代码调用 prompt("参数A", "参数B")
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
+        print("prompt:\(prompt)")
+        print("defaultText:\(String(describing: defaultText))")
+        
+        // 同步调用
+        if defaultText! == "sync" {
+            completionHandler(prompt)
+            return
+        }
+        
+        // 异步调用
+        if defaultText! == "async" {
+            let data = prompt.data(using: .utf8)
+            let dic = try! JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
+            print("data:\(String(describing: dic!["data"]))")
+            // 同步返回给JS返回值
+            completionHandler(dic!["data"] as? String)
+            
+            // 为了Demo演示这里就在执行完 返回值 回调JS
+            let jsMethod = dic!["callbackName"] as! String
+            webview.evaluateJavaScript("\(jsMethod)(\"回调参数111\")", completionHandler: nil)
+            return
+        }
+        
+        // 非异步 同步 调用 返回空字符串
+        completionHandler("")
+    }
+    
+    // 能否预览用户触摸的元素
+    // 根据实际情况实现
+    func webView(_ webView: WKWebView, shouldPreviewElement elementInfo: WKPreviewElementInfo) -> Bool {
+        return true
+    }
+    
+    // 定制预览控制器
+    // 根据实际情况实现
+    func webView(_ webView: WKWebView, previewingViewControllerForElement elementInfo: WKPreviewElementInfo, defaultActions previewActions: [WKPreviewActionItem]) -> UIViewController? {
+        return nil
+    }
+    
+    // 可弹出的视图控制器
+    // 根据实际情况实现
+    func webView(_ webView: WKWebView, commitPreviewingViewController previewingViewController: UIViewController) {
     }
     
     
